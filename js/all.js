@@ -36,10 +36,14 @@ const render = (item) => {
                     class="text-xl bg-black text-white text-center px-3 py-2 w-[88px] h-[44px] absolute top-3 right-[-5px]">
                     新品</div>
             </div>
-            <input type="button" href="#" class="cursor-pointer text-xl mb-2 bg-black text-white py-2 block text-center w-full hover:bg-primary" data-id="${item.id}" value="加入購物車">
+            <input type="button" href="#" class="cursor-pointer text-xl mb-2 bg-black text-white py-2 block text-center w-full hover:bg-primary" data-id="${
+              item.id
+            }" value="加入購物車">
             <h3 class="text-xl mb-2">${item.title}</h3>
-            <p class="text-xl line-through">NT$${item.origin_price}</p>
-            <p class="text-[28px]">NT$${item.price}</p>
+            <p class="text-xl line-through">NT$${Number(
+              item.origin_price
+            ).toLocaleString()}</p>
+            <p class="text-[28px]">NT$${Number(item.price).toLocaleString()}</p>
           </li>`;
 };
 
@@ -86,6 +90,7 @@ productList.addEventListener("click", (e) => {
     }
   });
 
+  console.log(cartData);
   addCartAxios(cartId, cartNum);
 });
 
@@ -102,7 +107,11 @@ const addCartAxios = (cartId, cartNum) => {
       }
     )
     .then((response) => {
-      alert("加入購物車成功");
+      swal({
+        title: "加入購物車成功!",
+        icon: "success",
+        button: "確定",
+      });
       getCartList();
     });
 };
@@ -117,7 +126,7 @@ const getCartList = () => {
       // 成功會回傳的內容
       cartData = response.data.carts;
       console.log(cartData);
-      cartTotal.textContent = response.data.finalTotal;
+      cartTotal.textContent = Number(response.data.finalTotal).toLocaleString();
       // 渲染購物車列表
       let str = "";
       cartData.map((item) => {
@@ -131,13 +140,15 @@ const getCartList = () => {
                     </div>
                 </td>
                 <td width="20%">
-                    NT$${item.product.price}
+                    NT$${Number(item.product.price).toLocaleString()}
                 </td>
                 <td width="20%">
                 ${item.quantity}
                 </td>
                 <td width="20%">
-                    NT$${item.product.price * item.quantity}
+                    NT$${Number(
+                      item.product.price * item.quantity
+                    ).toLocaleString()}
                 </td>
                 <td width="10%" class="text-center cursor-pointer hover:text-primary">  
                   <span class="material-icons" data-id="${item.id}">
@@ -146,7 +157,13 @@ const getCartList = () => {
                 </td>
             </tr>`;
       });
-      cartList.innerHTML = str;
+      if (str === "") {
+        cartList.innerHTML = ` <tr class="text-center text-[#bfbfbf] font-normal">
+                                  <td colspan="5" class="py-16">購物車內目前無品項</td>
+                               </tr>`;
+      } else {
+        cartList.innerHTML = str;
+      }
     });
 };
 
@@ -154,6 +171,7 @@ const getCartList = () => {
 cartList.addEventListener("click", (e) => {
   e.preventDefault();
 
+  console.log(e.target);
   let cartId = e.target.getAttribute("data-id");
   if (cartId == null) {
     return;
@@ -169,7 +187,11 @@ const delItemCartAxios = (cartId) => {
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts/${cartId}`
     )
     .then((response) => {
-      alert("單筆刪除成功");
+      swal({
+        title: "刪除成功!",
+        icon: "success",
+        button: "確定",
+      });
       getCartList();
     });
 };
@@ -188,11 +210,19 @@ const delAllCartAxios = () => {
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`
     )
     .then((response) => {
-      alert("刪除成功");
+      swal({
+        title: "刪除成功!",
+        icon: "success",
+        button: "確定",
+      });
       getCartList();
     })
     .catch((error) => {
-      alert("購物車已刪除，請勿重複點擊");
+      swal({
+        title: "購物車已刪除，請勿重複點擊!",
+        icon: "success",
+        button: "確定",
+      });
     });
 };
 
@@ -201,7 +231,11 @@ submitOrder.addEventListener("click", (e) => {
   e.preventDefault();
 
   if (cartData.length == 0) {
-    alert("請加入購物車");
+    swal({
+      title: "請加入購物車",
+      icon: "success",
+      button: "確定",
+    });
     return;
   }
 
@@ -217,15 +251,26 @@ submitOrder.addEventListener("click", (e) => {
     orderAddress == "" ||
     orderTrade == ""
   ) {
-    alert("請確實填寫預定資料");
+    swal({
+      title: "請確實填寫預定資料!",
+      icon: "success",
+      button: "確定",
+    });
     return;
   }
 
   submitOrderAxios(orderName, orderPhone, orderEmail, orderAddress, orderTrade);
+  orderFormValidate();
 });
 
 // 訂單相關(客戶)
-const submitOrderAxios = (orderName, orderPhone, orderEmail, orderAddress, orderTrade) => {
+const submitOrderAxios = (
+  orderName,
+  orderPhone,
+  orderEmail,
+  orderAddress,
+  orderTrade
+) => {
   axios
     .post(
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`,
@@ -242,15 +287,31 @@ const submitOrderAxios = (orderName, orderPhone, orderEmail, orderAddress, order
       }
     )
     .then((response) => {
-      alert("訂單送出成功");
-      orderName == "";
-      orderPhone == "";
-      orderEmail == "";
-      orderAddress == "";
-      orderTrade == "ATM";
+      swal({
+        title: "訂單送出成功!",
+        icon: "success",
+        button: "確定",
+        confirmButtonColor: "#6a33f8",
+      });
+      document.querySelector("#orderName").value = "";
+      document.querySelector("#orderPhone").value = "";
+      document.querySelector("#orderEmail").value = "";
+      document.querySelector("#orderAddress").value = "";
+      document.querySelector("#orderTrade").value = "ATM";
       getCartList();
     });
 };
 
 getProductList();
 getCartList();
+
+
+// swiper
+var swiper = new Swiper(".mySwiper", {
+  slidesPerView: 3,
+  spaceBetween: 30,
+  pagination: {
+    el: ".swiper-pagination",
+    clickable: true,
+  },
+});
