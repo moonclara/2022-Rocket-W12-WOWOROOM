@@ -5,6 +5,34 @@ const cartTotal = document.querySelector(".cartTotal");
 const delAllBtn = document.querySelector(".delAllBtn");
 const submitOrder = document.querySelector(".submitOrder");
 
+// 設置表單驗證規則
+const constraints = {
+  orderName: {
+    presence: true,
+    length: {
+      minimum: 1,
+      message: "must be at least 1 characters",
+    },
+  },
+  orderPhone: {
+    presence: true,
+    format: {
+      pattern: "^09[0-9]{8}$",
+    },
+  },
+  orderEmail: {
+    presence: true,
+    email: true,
+  },
+  orderAddress: {
+    presence: true,
+    length: {
+      minimum: 1,
+      message: "must be at least 1 characters",
+    },
+  },
+};
+
 let productData = [];
 let cartData = [];
 
@@ -15,15 +43,11 @@ const getProductList = () => {
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/products`
     )
     .then((response) => {
-      // 成功會回傳的內容
-      // console.log(response);
-      // console.log(response.data);
       productData = response.data.products;
       console.log(productData);
       renderProductList();
     })
     .catch((error) => {
-      // 失敗會回傳的內容
       console.log(error);
     });
 };
@@ -90,6 +114,12 @@ productList.addEventListener("click", (e) => {
     }
   });
 
+  swal({
+    title: "加入購物車成功!",
+    icon: "success",
+    button: "確定",
+  });
+
   console.log(cartData);
   addCartAxios(cartId, cartNum);
 });
@@ -107,11 +137,6 @@ const addCartAxios = (cartId, cartNum) => {
       }
     )
     .then((response) => {
-      swal({
-        title: "加入購物車成功!",
-        icon: "success",
-        button: "確定",
-      });
       getCartList();
     });
 };
@@ -177,7 +202,20 @@ cartList.addEventListener("click", (e) => {
     return;
   }
 
-  delItemCartAxios(cartId);
+  swal({
+    title: "刪除商品",
+    text: "確定要刪除此筆購物車商品?",
+    icon: "warning",
+    buttons: true,
+    dangerMode: true,
+  }).then((willDelete) => {
+    if (willDelete) {
+      swal("您的購物車商品已刪除", {
+        icon: "success",
+      });
+      delItemCartAxios(cartId);
+    }
+  });
 });
 
 // 購物車相關(客戶) : 刪除購物車單一品項列表
@@ -187,11 +225,6 @@ const delItemCartAxios = (cartId) => {
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts/${cartId}`
     )
     .then((response) => {
-      swal({
-        title: "刪除成功!",
-        icon: "success",
-        button: "確定",
-      });
       getCartList();
     });
 };
@@ -200,7 +233,29 @@ const delItemCartAxios = (cartId) => {
 delAllBtn.addEventListener("click", (e) => {
   e.preventDefault();
 
-  delAllCartAxios();
+  if (cartData != 0) {
+    swal({
+      title: "刪除商品",
+      text: "確定要刪除購物車內的所有商品?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        swal("您的購物車商品已全部刪除", {
+          icon: "success",
+        });
+        delAllCartAxios();
+      }
+    });
+  }else{
+    swal({
+      title: "已全部刪除",
+      text: "購物車商品已全數刪除，請勿重複點擊!",
+      icon: "success",
+      button: "確定",
+    });
+  }
 });
 
 // 購物車相關(客戶) : 刪除購物車單一品項列表
@@ -210,27 +265,15 @@ const delAllCartAxios = () => {
       `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`
     )
     .then((response) => {
-      swal({
-        title: "刪除成功!",
-        icon: "success",
-        button: "確定",
-      });
       getCartList();
     })
-    .catch((error) => {
-      swal({
-        title: "購物車已刪除，請勿重複點擊!",
-        icon: "success",
-        button: "確定",
-      });
-    });
 };
 
 // 送出訂單
 submitOrder.addEventListener("click", (e) => {
   e.preventDefault();
 
-  if (cartData.length == 0) {
+  if (cartData.length === 0) {
     swal({
       title: "請加入購物車",
       icon: "success",
@@ -239,31 +282,28 @@ submitOrder.addEventListener("click", (e) => {
     return;
   }
 
+  // 表單驗證
   const orderName = document.querySelector("#orderName").value;
   const orderPhone = document.querySelector("#orderPhone").value;
   const orderEmail = document.querySelector("#orderEmail").value;
   const orderAddress = document.querySelector("#orderAddress").value;
   const orderTrade = document.querySelector("#orderTrade").value;
-  if (
-    orderName == "" ||
-    orderPhone == "" ||
-    orderEmail == "" ||
-    orderAddress == "" ||
-    orderTrade == ""
-  ) {
-    swal({
-      title: "請確實填寫預定資料!",
-      icon: "success",
-      button: "確定",
-    });
-    return;
-  }
+  const orderError = document.querySelectorAll(".orderError");
+  const inputs = document.querySelectorAll("input[id]");
+
+  // 出現必填提示
+  inputs.forEach((item, index) => {
+    // console.log(orderError);
+    if (item.value === "") {
+      orderError[index].innerHTML = `${orderError[index].dataset.message}必填`;
+    } else {
+      orderError[index].innerHTML = "　";
+    }
+  });
 
   submitOrderAxios(orderName, orderPhone, orderEmail, orderAddress, orderTrade);
-  orderFormValidate();
 });
 
-// 訂單相關(客戶)
 const submitOrderAxios = (
   orderName,
   orderPhone,
@@ -271,42 +311,46 @@ const submitOrderAxios = (
   orderAddress,
   orderTrade
 ) => {
-  axios
-    .post(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`,
-      {
-        data: {
-          user: {
-            name: orderName,
-            tel: orderPhone,
-            email: orderEmail,
-            address: orderAddress,
-            payment: orderTrade,
+  // 表單驗證
+  const orderForm = document.querySelector("#orderForm");
+  const errors = validate(orderForm, constraints);
+  if (errors === undefined) {
+    axios
+      .post(
+        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`,
+        {
+          data: {
+            user: {
+              name: orderName,
+              tel: orderPhone,
+              email: orderEmail,
+              address: orderAddress,
+              payment: orderTrade,
+            },
           },
-        },
-      }
-    )
-    .then((response) => {
-      swal({
-        title: "訂單送出成功!",
-        icon: "success",
-        button: "確定",
-        confirmButtonColor: "#6a33f8",
+        }
+      )
+      .then((response) => {
+        orderForm.reset();
+        swal({
+          title: "訂單送出成功!",
+          icon: "success",
+          button: "確定",
+        });
+        getCartList();
+      })
+      .catch((error) => {
+        swal("Oops!", `${error.response.data.message}`, "error");
       });
-      document.querySelector("#orderName").value = "";
-      document.querySelector("#orderPhone").value = "";
-      document.querySelector("#orderEmail").value = "";
-      document.querySelector("#orderAddress").value = "";
-      document.querySelector("#orderTrade").value = "ATM";
-      getCartList();
-    });
+  } else {
+    swal("請確實填寫預訂資料!", `${Object.values(errors)}`, "error");
+  }
 };
 
 getProductList();
 getCartList();
 
-
-// swiper
+// 好評推薦 swiper
 var swiper = new Swiper(".mySwiper", {
   slidesPerView: 3,
   spaceBetween: 30,

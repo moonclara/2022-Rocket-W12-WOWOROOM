@@ -1,5 +1,10 @@
 const orderList = document.querySelector(".orderList");
 const delOrderBtn = document.querySelector(".delOrderBtn");
+const config = {
+  headers: {
+    Authorization: token,
+  },
+};
 
 let orderData = [];
 
@@ -105,11 +110,7 @@ const getOrderList = () => {
   axios
     .get(
       `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
+      config
     )
     .then((response) => {
       orderData = response.data.orders;
@@ -156,8 +157,6 @@ const getOrderList = () => {
         orderList.innerHTML = str;
       }
 
-      
-      // orderList.innerHTML = str;
       renderProductCategory();
       product();
     });
@@ -176,13 +175,32 @@ orderList.addEventListener("click", (e) => {
   if (targetClass === "orderStatus") {
     let status = e.target.getAttribute("data-status");
     modifyOrderStatus(status, id);
+    swal({
+      title: "訂單狀態",
+      text: "訂單狀態修改成功!",
+      icon: "success",
+      button: "確定",
+    });
     return;
   }
 
   // 刪除單筆訂單
   if (targetType === "button") {
-    delOrderItem(id);
-    return;
+    swal({
+      title: "刪除訂單",
+      text: "確定要刪除此筆訂單?",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        swal("您的訂單已刪除", {
+          icon: "success",
+        });
+        delOrderItem(id);
+        return;
+      }
+    });
   }
 });
 
@@ -191,15 +209,37 @@ delOrderBtn.addEventListener("click", (e) => {
   e.preventDefault();
   let targetType = e.target.type;
 
-  if (targetType === "button") {
-    delOrder();
-    return;
+  if (orderData != 0) {
+    if (targetType === "button") {
+      swal({
+        title: "刪除訂單",
+        text: "確定要刪除全部訂單?",
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then((willDelete) => {
+        if (willDelete) {
+          swal("您的訂單已全部刪除", {
+            icon: "success",
+          });
+          delOrder();
+          return;
+        }
+      });
+    }
+  } else {
+    swal({
+      title: "已全部刪除",
+      text: "訂單已全數刪除，請勿重複點擊!",
+      icon: "success",
+      button: "確定",
+    });
   }
 });
 
 // 訂單相關(管理者) : 修改訂單狀態
 const modifyOrderStatus = (status, id) => {
-  let newStatus = status === true ? false : true;
+  let newStatus = status == true ? false : true;
 
   axios
     .put(
@@ -210,18 +250,9 @@ const modifyOrderStatus = (status, id) => {
           paid: newStatus,
         },
       },
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
+      config
     )
     .then((response) => {
-      swal({
-        title: "訂單修改成功!",
-        icon: "success",
-        button: "確定",
-      });
       getOrderList();
     });
 };
@@ -231,18 +262,9 @@ const delOrderItem = (id) => {
   axios
     .delete(
       `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders/${id}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
+      config
     )
     .then((response) => {
-      swal({
-        title: "訂單修改成功!",
-        icon: "success",
-        button: "確定",
-      });
       getOrderList();
     });
 };
@@ -252,25 +274,9 @@ const delOrder = () => {
   axios
     .delete(
       `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}/orders`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
+      config
     )
     .then((response) => {
-      swal({
-        title: "訂單已被全部刪除!",
-        icon: "success",
-        button: "確定",
-      });
       getOrderList();
-    })
-    .catch((error) => {
-      swal({
-        title: "目前無訂單，請勿重複點擊!",
-        icon: "success",
-        button: "確定",
-      });
     });
 };

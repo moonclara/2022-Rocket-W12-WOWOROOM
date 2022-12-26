@@ -850,7 +850,7 @@ table th,
   border-color: rgb(191 191 191 / var(--tw-border-opacity));
 }
 
-.bg-\[\#c44021\] {
+.bg-warn {
   --tw-bg-opacity: 1;
   background-color: rgb(196 64 33 / var(--tw-bg-opacity));
 }
@@ -873,11 +873,6 @@ table th,
 .bg-black {
   --tw-bg-opacity: 1;
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
-}
-
-.bg-warn {
-  --tw-bg-opacity: 1;
-  background-color: rgb(196 64 33 / var(--tw-bg-opacity));
 }
 
 .bg-cover {
@@ -924,16 +919,6 @@ table th,
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-}
-
-.py-16 {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
 }
 
 .pt-12 {
@@ -1011,8 +996,9 @@ table th,
   font-weight: 700;
 }
 
-.font-normal {
-  font-weight: 400;
+.text-info {
+  --tw-text-opacity: 1;
+  color: rgb(0 103 206 / var(--tw-text-opacity));
 }
 
 .text-white {
@@ -1033,16 +1019,6 @@ table th,
 .text-\[\#818A91\] {
   --tw-text-opacity: 1;
   color: rgb(129 138 145 / var(--tw-text-opacity));
-}
-
-.text-\[\#bfbfbf\] {
-  --tw-text-opacity: 1;
-  color: rgb(191 191 191 / var(--tw-text-opacity));
-}
-
-.text-info {
-  --tw-text-opacity: 1;
-  color: rgb(0 103 206 / var(--tw-text-opacity));
 }
 
 .text-pink-600 {
