@@ -531,10 +531,6 @@ table th,
   --tw-backdrop-sepia:  ;
 }
 
-.invisible {
-  visibility: hidden;
-}
-
 .absolute {
   position: absolute;
 }
@@ -614,10 +610,6 @@ table th,
 
 .mb-\[6px\] {
   margin-bottom: 6px;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
 }
 
 .block {
@@ -1021,11 +1013,6 @@ table th,
   color: rgb(129 138 145 / var(--tw-text-opacity));
 }
 
-.text-pink-600 {
-  --tw-text-opacity: 1;
-  color: rgb(219 39 119 / var(--tw-text-opacity));
-}
-
 .underline {
   text-decoration-line: underline;
 }
@@ -1079,8 +1066,4 @@ table th,
 .focus\:outline-none:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
-}
-
-.peer:invalid ~ .peer-invalid\:visible {
-  visibility: visible;
 }

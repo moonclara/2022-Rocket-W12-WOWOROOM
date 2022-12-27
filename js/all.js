@@ -1,9 +1,10 @@
-const productList = document.querySelector(".productList");
-const selectProductBtn = document.querySelector(".selectProductBtn");
-const cartList = document.querySelector(".cartList");
-const cartTotal = document.querySelector(".cartTotal");
-const delAllBtn = document.querySelector(".delAllBtn");
-const submitOrder = document.querySelector(".submitOrder");
+/* eslint-disable no-unused-vars */
+const productList = document.querySelector('.productList');
+const selectProductBtn = document.querySelector('.selectProductBtn');
+const cartList = document.querySelector('.cartList');
+const cartTotal = document.querySelector('.cartTotal');
+const delAllBtn = document.querySelector('.delAllBtn');
+const submitOrder = document.querySelector('.submitOrder');
 
 // 設置表單驗證規則
 const constraints = {
@@ -11,13 +12,13 @@ const constraints = {
     presence: true,
     length: {
       minimum: 1,
-      message: "must be at least 1 characters",
+      message: 'must be at least 1 characters',
     },
   },
   orderPhone: {
     presence: true,
     format: {
-      pattern: "^09[0-9]{8}$",
+      pattern: '^09[0-9]{8}$',
     },
   },
   orderEmail: {
@@ -28,7 +29,7 @@ const constraints = {
     presence: true,
     length: {
       minimum: 1,
-      message: "must be at least 1 characters",
+      message: 'must be at least 1 characters',
     },
   },
 };
@@ -38,22 +39,26 @@ let cartData = [];
 
 // 產品相關(客戶) : 取得產品列表
 const getProductList = () => {
+  // eslint-disable-next-line no-undef
   axios
     .get(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/products`
+      // eslint-disable-next-line no-undef
+      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${apiPath}/products`,
     )
     .then((response) => {
       productData = response.data.products;
+      // eslint-disable-next-line no-console
       console.log(productData);
+      // eslint-disable-next-line no-use-before-define
       renderProductList();
     })
     .catch((error) => {
+      // eslint-disable-next-line no-console
       console.log(error);
     });
 };
 
-const render = (item) => {
-  return `<li class="w-[22%] mr-[26px] mb-7">
+const render = (item) => `<li class="w-[22%] mr-[26px] mb-7">
             <div class="bg-cover bg-center w-full h-[302px] relative"
                 style="background-image: url(${item.images})">
                 <div
@@ -61,19 +66,19 @@ const render = (item) => {
                     新品</div>
             </div>
             <input type="button" href="#" class="cursor-pointer text-xl mb-2 bg-black text-white py-2 block text-center w-full hover:bg-primary" data-id="${
-              item.id
-            }" value="加入購物車">
+  item.id
+}" value="加入購物車">
             <h3 class="text-xl mb-2">${item.title}</h3>
             <p class="text-xl line-through">NT$${Number(
-              item.origin_price
-            ).toLocaleString()}</p>
+    item.origin_price,
+  ).toLocaleString()}</p>
             <p class="text-[28px]">NT$${Number(item.price).toLocaleString()}</p>
           </li>`;
-};
 
 // 渲染產品列表
 const renderProductList = () => {
-  let str = "";
+  let str = '';
+  // eslint-disable-next-line array-callback-return
   productData.map((item) => {
     str += render(item);
   });
@@ -81,16 +86,17 @@ const renderProductList = () => {
 };
 
 // 產品篩選
-selectProductBtn.addEventListener("change", (e) => {
+selectProductBtn.addEventListener('change', (e) => {
   e.preventDefault();
 
-  let category = e.target.value;
-  if (category === "全部") {
+  const category = e.target.value;
+  if (category === '全部') {
     renderProductList();
     return;
   }
 
-  let str = "";
+  let str = '';
+  // eslint-disable-next-line array-callback-return
   productData.map((item) => {
     if (category === item.category) {
       str += render(item);
@@ -100,67 +106,79 @@ selectProductBtn.addEventListener("change", (e) => {
 });
 
 // 加入購物車
-productList.addEventListener("click", (e) => {
+productList.addEventListener('click', (e) => {
   e.preventDefault();
-  if (e.target.type !== "button") {
+  if (e.target.type !== 'button') {
     return;
   }
 
-  let cartId = e.target.getAttribute("data-id");
+  const cartId = e.target.getAttribute('data-id');
   let cartNum = 1;
+  // eslint-disable-next-line array-callback-return
   cartData.map((item) => {
     if (item.product.id === cartId) {
+      // eslint-disable-next-line no-multi-assign, no-param-reassign
       cartNum = item.quantity += 1;
     }
   });
 
+  // eslint-disable-next-line no-undef
   swal({
-    title: "加入購物車成功!",
-    icon: "success",
-    button: "確定",
+    title: '加入購物車成功!',
+    icon: 'success',
+    button: '確定',
   });
 
+  // eslint-disable-next-line no-console
   console.log(cartData);
+  // eslint-disable-next-line no-use-before-define
   addCartAxios(cartId, cartNum);
 });
 
 // 購物車相關(客戶) : 加入購物車列表
 const addCartAxios = (cartId, cartNum) => {
+  // eslint-disable-next-line no-undef
   axios
     .post(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`,
+      // eslint-disable-next-line no-undef
+      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${apiPath}/carts`,
       {
         data: {
           productId: cartId,
           quantity: cartNum,
         },
-      }
+      },
     )
     .then((response) => {
+      // eslint-disable-next-line no-use-before-define
       getCartList();
     });
 };
 
 // 購物車相關(客戶) : 取得購物車列表
 const getCartList = () => {
+  // eslint-disable-next-line no-undef
   axios
     .get(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`
+      // eslint-disable-next-line no-undef
+      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${apiPath}/carts`,
     )
-    .then(function (response) {
+    .then((response) => {
       // 成功會回傳的內容
       cartData = response.data.carts;
+      // eslint-disable-next-line no-console
       console.log(cartData);
       cartTotal.textContent = Number(response.data.finalTotal).toLocaleString();
       // 渲染購物車列表
-      let str = "";
+      let str = '';
+      // eslint-disable-next-line array-callback-return
       cartData.map((item) => {
         str += `<tr class="border-b-2 border-[#bfbfbf]">
                 <td width="30%">
                     <div class="flex items-center">
                         <img class="pr-4 w-[80px] h-[80px]" src="${
-                          item.product.images
-                        }" alt="">
+  item.product.images
+}" alt="">
                         <p class="pr-4">${item.product.title}</p>
                     </div>
                 </td>
@@ -172,17 +190,17 @@ const getCartList = () => {
                 </td>
                 <td width="20%">
                     NT$${Number(
-                      item.product.price * item.quantity
-                    ).toLocaleString()}
+    item.product.price * item.quantity,
+  ).toLocaleString()}
                 </td>
                 <td width="10%" class="text-center cursor-pointer hover:text-primary">  
                   <span class="material-icons" data-id="${item.id}">
-                  close
+                  delete
                   </span> 
                 </td>
             </tr>`;
       });
-      if (str === "") {
+      if (str === '') {
         cartList.innerHTML = ` <tr class="text-center text-[#bfbfbf] font-normal">
                                   <td colspan="5" class="py-16">購物車內目前無品項</td>
                                </tr>`;
@@ -193,26 +211,30 @@ const getCartList = () => {
 };
 
 // 刪除購物車單一品項
-cartList.addEventListener("click", (e) => {
+cartList.addEventListener('click', (e) => {
   e.preventDefault();
 
+  // eslint-disable-next-line no-console
   console.log(e.target);
-  let cartId = e.target.getAttribute("data-id");
+  const cartId = e.target.getAttribute('data-id');
   if (cartId == null) {
     return;
   }
 
+  // eslint-disable-next-line no-undef
   swal({
-    title: "刪除商品",
-    text: "確定要刪除此筆購物車商品?",
-    icon: "warning",
+    title: '刪除商品',
+    text: '確定要刪除此筆購物車商品?',
+    icon: 'warning',
     buttons: true,
     dangerMode: true,
   }).then((willDelete) => {
     if (willDelete) {
-      swal("您的購物車商品已刪除", {
-        icon: "success",
+      // eslint-disable-next-line no-undef
+      swal('您的購物車商品已刪除', {
+        icon: 'success',
       });
+      // eslint-disable-next-line no-use-before-define
       delItemCartAxios(cartId);
     }
   });
@@ -220,9 +242,11 @@ cartList.addEventListener("click", (e) => {
 
 // 購物車相關(客戶) : 刪除購物車單一品項列表
 const delItemCartAxios = (cartId) => {
+  // eslint-disable-next-line no-undef
   axios
     .delete(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts/${cartId}`
+      // eslint-disable-next-line no-undef
+      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${apiPath}/carts/${cartId}`,
     )
     .then((response) => {
       getCartList();
@@ -230,77 +254,85 @@ const delItemCartAxios = (cartId) => {
 };
 
 // 刪除購物車所有品項
-delAllBtn.addEventListener("click", (e) => {
+delAllBtn.addEventListener('click', (e) => {
   e.preventDefault();
 
-  if (cartData != 0) {
+  if (cartData.length !== 0) {
+    // eslint-disable-next-line no-undef
     swal({
-      title: "刪除商品",
-      text: "確定要刪除購物車內的所有商品?",
-      icon: "warning",
+      title: '刪除商品',
+      text: '確定要刪除購物車內的所有商品?',
+      icon: 'warning',
       buttons: true,
       dangerMode: true,
     }).then((willDelete) => {
       if (willDelete) {
-        swal("您的購物車商品已全部刪除", {
-          icon: "success",
+        // eslint-disable-next-line no-undef
+        swal('您的購物車商品已全部刪除', {
+          icon: 'success',
         });
+        // eslint-disable-next-line no-use-before-define
         delAllCartAxios();
       }
     });
-  }else{
+  } else {
+    // eslint-disable-next-line no-undef
     swal({
-      title: "已全部刪除",
-      text: "購物車商品已全數刪除，請勿重複點擊!",
-      icon: "success",
-      button: "確定",
+      title: '已全部刪除',
+      text: '購物車商品已全數刪除，請勿重複點擊!',
+      icon: 'success',
+      button: '確定',
     });
   }
 });
 
 // 購物車相關(客戶) : 刪除購物車單一品項列表
 const delAllCartAxios = () => {
+  // eslint-disable-next-line no-undef
   axios
     .delete(
-      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/carts`
+      // eslint-disable-next-line no-undef
+      `https://livejs-api.hexschool.io/api/livejs/v1/customer/${apiPath}/carts`,
     )
     .then((response) => {
       getCartList();
-    })
+    });
 };
 
 // 送出訂單
-submitOrder.addEventListener("click", (e) => {
+submitOrder.addEventListener('click', (e) => {
   e.preventDefault();
 
   if (cartData.length === 0) {
+    // eslint-disable-next-line no-undef
     swal({
-      title: "請加入購物車",
-      icon: "success",
-      button: "確定",
+      title: '請加入購物車',
+      icon: 'success',
+      button: '確定',
     });
     return;
   }
 
   // 表單驗證
-  const orderName = document.querySelector("#orderName").value;
-  const orderPhone = document.querySelector("#orderPhone").value;
-  const orderEmail = document.querySelector("#orderEmail").value;
-  const orderAddress = document.querySelector("#orderAddress").value;
-  const orderTrade = document.querySelector("#orderTrade").value;
-  const orderError = document.querySelectorAll(".orderError");
-  const inputs = document.querySelectorAll("input[id]");
+  const orderName = document.querySelector('#orderName').value;
+  const orderPhone = document.querySelector('#orderPhone').value;
+  const orderEmail = document.querySelector('#orderEmail').value;
+  const orderAddress = document.querySelector('#orderAddress').value;
+  const orderTrade = document.querySelector('#orderTrade').value;
+  const orderError = document.querySelectorAll('.orderError');
+  const inputs = document.querySelectorAll('input[id]');
 
   // 出現必填提示
   inputs.forEach((item, index) => {
     // console.log(orderError);
-    if (item.value === "") {
+    if (item.value === '') {
       orderError[index].innerHTML = `${orderError[index].dataset.message}必填`;
     } else {
-      orderError[index].innerHTML = "　";
+      orderError[index].innerHTML = '　';
     }
   });
 
+  // eslint-disable-next-line no-use-before-define
   submitOrderAxios(orderName, orderPhone, orderEmail, orderAddress, orderTrade);
 });
 
@@ -309,15 +341,18 @@ const submitOrderAxios = (
   orderPhone,
   orderEmail,
   orderAddress,
-  orderTrade
+  orderTrade,
 ) => {
   // 表單驗證
-  const orderForm = document.querySelector("#orderForm");
+  const orderForm = document.querySelector('#orderForm');
+  // eslint-disable-next-line no-undef
   const errors = validate(orderForm, constraints);
   if (errors === undefined) {
+    // eslint-disable-next-line no-undef
     axios
       .post(
-        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${api_path}/orders`,
+        // eslint-disable-next-line no-undef
+        `https://livejs-api.hexschool.io/api/livejs/v1/customer/${apiPath}/orders`,
         {
           data: {
             user: {
@@ -328,22 +363,25 @@ const submitOrderAxios = (
               payment: orderTrade,
             },
           },
-        }
+        },
       )
       .then((response) => {
         orderForm.reset();
+        // eslint-disable-next-line no-undef
         swal({
-          title: "訂單送出成功!",
-          icon: "success",
-          button: "確定",
+          title: '訂單送出成功!',
+          icon: 'success',
+          button: '確定',
         });
         getCartList();
       })
       .catch((error) => {
-        swal("Oops!", `${error.response.data.message}`, "error");
+        // eslint-disable-next-line no-undef
+        swal('Oops!', `${error.response.data.message}`, 'error');
       });
   } else {
-    swal("請確實填寫預訂資料!", `${Object.values(errors)}`, "error");
+    // eslint-disable-next-line no-undef
+    swal('請確實填寫預訂資料!', `${Object.values(errors)}`, 'error');
   }
 };
 
@@ -351,11 +389,12 @@ getProductList();
 getCartList();
 
 // 好評推薦 swiper
-var swiper = new Swiper(".mySwiper", {
+// eslint-disable-next-line no-undef
+const swiper = new Swiper('.mySwiper', {
   slidesPerView: 3,
   spaceBetween: 30,
   pagination: {
-    el: ".swiper-pagination",
+    el: '.swiper-pagination',
     clickable: true,
   },
 });

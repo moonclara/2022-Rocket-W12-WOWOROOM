@@ -1,7 +1,6 @@
 {
-  "name": "w12",
+  "name": "woworoom",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,6 +8,19 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^8.30.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
     "tailwindcss": "^3.2.4"
-  }
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moonclara/2022-Rocket-W12-WOWOROOM-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/moonclara/2022-Rocket-W12-WOWOROOM-/issues"
+  },
+  "homepage": "https://github.com/moonclara/2022-Rocket-W12-WOWOROOM-#readme",
+  "description": ""
 }
